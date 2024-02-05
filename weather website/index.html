@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>How's the weather today?</title>
+</head>
+
+<body>
+
+    <div class="nav">
+        <h1>W</h1>
+    </div>
+    <div id="hero">
+        <div class="herocontent">
+            <h1>Ahoy there!</h1><br>
+            <h3>Wondering how’s the weather today?</h3><br>
+        </div>
+        <button id="ctaButton" onclick="showWeatherSection()">
+            Weather Check<span class="button-icon">
+                <div class="spark"></div>
+            </span>
+        </button>
+    </div>
+    <section id="weatherSection">
+        <div id="weather-card">
+            <div class="search"><input type="text" placeholder="Enter your location...">
+                <button type="submit" class="searchBtn"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="error">Oops! Location not found!</div>
+            <div class="weather-content">
+                <h3 class="location">London</h3><br>
+                <div><img class="weather-icon" src="images/cloudyicon.png"></div>
+                <h1 class="temperature">12°C</h1><br>
+            </div>
+        </div>
+    </section>
+    <br>
+    <br>
+</body>
+<script>
+    function showWeatherSection() {
+        var weatherSection = document.getElementById('weatherSection');
+        weatherSection.style.display = (weatherSection.style.display === 'none') ? 'block' : 'none';
+        document.getElementById('ctaButton').addEventListener('click', function () {
+            smoothScroll('#weatherSection');
+        });
+    
+        function smoothScroll(target) {
+            const targetElement = document.querySelector(target);
+            window.scrollTo({
+                top: targetElement.offsetTop,
+                behavior: 'smooth'
+            });
+        }
+    }
+    
+
+    const apiKey = "17e48ddc44c4f0df56529da39100ad4d";
+    const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+    const searchbox = document.querySelector(".search input");
+    const searchbtn = document.querySelector(".search button");
+    const weathericon = document.querySelector(".weather-icon");
+
+    async function checkWeather(location) {
+        const response = await fetch(apiUrl + location + `&appid=${apiKey}`);
+        if (response.status == 404) {
+            document.getElementById("weather-card").style.backgroundImage = "url(images/init1.svg)";
+            document.querySelector(".error").style.display = "block";
+            document.querySelector(".weather-content").style.display = "none";
+        }
+        else {
+            var data = await response.json();
+            var bgimg = document.getElementById("weather-card");
+            document.querySelector(".location").innerHTML = data.name;
+            document.querySelector(".temperature").innerHTML = data.main.temp + "°C";
+
+            if (data.weather[0].main == "Clouds") {
+                weathericon.src = "images/cloudyicon.png";
+                bgimg.style.backgroundImage = "url(images/cloudy.png)"
+
+            }
+            else if (data.weather[0].main == "Rain") {
+                weathericon.src = "images/rainicon.png";
+                bgimg.style.backgroundImage = "url(images/rain.png)"
+            }
+            else if (data.weather[0].main == "Clear") {
+                weathericon.src = "images/clearicon.png";
+                bgimg.style.backgroundImage = "url(images/clear.png)"
+            }
+            else if (data.weather[0].main == "Snow") {
+                weathericon.src = "images/snowicon.png";
+                bgimg.style.backgroundImage = "url(images/snow.png)"
+            }
+            else if (data.weather[0].main == "Thunderstorm") {
+                weathericon.src = "images/thundericon.png";
+                bgimg.style.backgroundImage = "url(images/thunderstorm.png)"
+            }
+            else if (data.weather[0].main == "Mist") {
+                weathericon.src = "images/misticon.png";
+                bgimg.style.backgroundImage = "url(images/mist.png)"
+            }
+
+            document.querySelector(".weather-content").style.display = "block";
+            document.querySelector(".error").style.display = "none";
+        }
+
+    }
+    
+    searchbtn.addEventListener("click", () => {
+        checkWeather(searchbox.value);
+    })
+</script>
+
+
+
+
+</html>
